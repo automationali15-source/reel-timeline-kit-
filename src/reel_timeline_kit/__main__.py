@@ -10,12 +10,13 @@ def main(argv=None):
     parser.add_argument("manifest", type=Path)
     parser.add_argument("--out", type=Path, default=Path("exports"))
     parser.add_argument("--max-wpm", type=int, default=180)
+    parser.add_argument("--caption-words", type=int, default=0, help="Max words per SRT cue, 0=one cue per scene")
     parser.add_argument("--strict", action="store_true")
     args = parser.parse_args(argv)
     try:
         data = json.loads(args.manifest.read_text(encoding="utf-8"))
         timeline = build_timeline(data, args.max_wpm)
-        export_timeline(timeline, args.out)
+        export_timeline(timeline, args.out, caption_words=args.caption_words)
     except (OSError, ValueError, ManifestError) as exc:
         print(f"Error: {exc}",file=sys.stderr)
         return 1
