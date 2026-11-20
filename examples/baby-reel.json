@@ -1,0 +1,42 @@
+{
+  "project": "The Tiny Chef",
+  "fps": 30,
+  "scenes": [
+    {
+      "name": "Hook",
+      "duration": 2,
+      "visual": "Curious animated baby holding a spoon",
+      "voiceover": "What is happening?",
+      "sfx": [
+        "pop"
+      ]
+    },
+    {
+      "name": "Mix",
+      "duration": 6,
+      "visual": "Flour puff as the baby mixes a bowl",
+      "voiceover": "A little chef makes a big mess.",
+      "sfx": [
+        "whisk"
+      ]
+    },
+    {
+      "name": "Reveal",
+      "duration": 6,
+      "visual": "An enormous pancake flips",
+      "voiceover": "Wow, what a huge pancake!",
+      "sfx": [
+        "boing"
+      ]
+    },
+    {
+      "name": "Laugh",
+      "duration": 6,
+      "visual": "Baby and teddy laugh together",
+      "voiceover": "Even teddy wants more!",
+      "sfx": [
+        "laughter"
+      ]
+    }
+  ]
+}
