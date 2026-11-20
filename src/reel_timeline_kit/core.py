@@ -52,7 +52,34 @@ def srt_time(seconds):
     seconds, ms = divmod(rem, 1000)
     return f"{hours:02}:{minutes:02}:{seconds:02},{ms:03}"
 
-def export_timeline(timeline, output):
+def caption_cues(timeline, max_words=0):
+    """Build non-overlapping, frame-aligned SRT draft cues.
+
+    max_words=0 keeps one caption per voiced scene.
+    For short scenes with fewer frames than word groups, the limit is relaxed.
+    Caption timing is an even estimate, not audio transcription.
+    """
+    if type(max_words) is not int or max_words < 0:
+        raise ManifestError("caption_words must be a nonnegative integer")
+    cues = []
+    for scene in timeline["scenes"]:
+        words = scene["voiceover"].split()
+        if not words:
+            continue
+        start_frame = scene["start_frame"]
+        frames = scene["duration_frames"]
+        if max_words == 0:
+            cues.append((start_frame, scene["end_frame"], scene["voiceover"]))
+            continue
+        group_size = max(max_words, math.ceil(len(words) / frames))
+        groups = [" ".join(words[i:i+group_size]) for i in range(0, len(words), group_size)]
+        for i, content in enumerate(groups):
+            start = start_frame + i * frames // len(groups)
+            end = start_frame + (i+1) * frames // len(groups)
+            cues.append((start, end, content))
+    return cues
+
+def export_timeline(timeline, output, caption_words=0):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     with (output/"timeline.csv").open("w", newline="", encoding="utf-8") as stream:
@@ -61,9 +88,8 @@ def export_timeline(timeline, output):
         for scene in timeline["scenes"]:
             writer.writerow({**scene,"sfx":" | ".join(scene["sfx"])})
     cues = []
-    for scene in timeline["scenes"]:
-        if scene["voiceover"].strip():
-            cues.append(f'{len(cues)+1}\n{srt_time(scene["start_seconds"])} --> {srt_time(scene["end_seconds"])}\n{scene["voiceover"]}')
+    for start, end, content in caption_cues(timeline, caption_words):
+        cues.append(f"{len(cues)+1}\n{srt_time(start/timeline['fps'])} --> {srt_time(end/timeline['fps'])}\n{content}")
     (output/"captions.srt").write_text("\n\n".join(cues)+("\n" if cues else ""),encoding="utf-8")
     prompts = [f'# {timeline["project"]}']
     for scene in timeline["scenes"]:
