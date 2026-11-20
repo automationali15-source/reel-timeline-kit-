@@ -59,3 +59,11 @@ This tool **does not render videos**. It generates planning files only. Do not t
 See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Open reproducible issues, submit tested pull requests, and avoid sharing copyrighted media or private keys.
 
 Licensed under the [MIT License](LICENSE). Created as a starting point for genuine ongoing open-source maintenance.
+
+## Shorter captions (new)
+
+```bash
+reel-timeline examples/baby-reel.json --out exports --caption-words 4
+```
+
+Set `--caption-words N` to split narrated scenes into frame-aligned SRT drafts, at most N words per cue when possible. The tool relaxes the limit when a shot has fewer frames than word groups, so no cue has zero duration. **Timing is distributed evenly; it is not based on speech recognition.** The default value 0 preserves one cue per scene.
